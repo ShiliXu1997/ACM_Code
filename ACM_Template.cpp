@@ -1384,8 +1384,9 @@ void splay(int x, int f)
     update(x);//自己最后要更新
 }
 
-void select(int k, int f)//把排行第k的数splay到f下面，注意编号有平移
+void select(int k, int f)//把排行第k的数splay到f下面
 {
+    k++;//因为序列首位各有一个点在占位，所以编号有所平移
     int now = root, tmp;
     while (true) {
         push_down(now);
@@ -1403,13 +1404,13 @@ void select(int k, int f)//把排行第k的数splay到f下面，注意编号有平移
 
 void select_segment(int l, int r)//区间提取，把[l, r]提到根结点的右儿子的左子树
 {  
-    select(l, 0);
-    select(r + 2, root);
+    select(l - 1, 0);
+    select(r + 1, root);
 }
 
-void insert(int x, int num)//插入新数，编号为x，大小为num
+void insert(int x, int num)//插入新数，编号为x，大小为num，若第x号数存在相当于在它之前插num
 {
-    select_segment(x + 1, x);
+    select_segment(x, x - 1);
     int now;
     if (st.empty())
         now = ++mem;
@@ -1451,10 +1452,10 @@ void revolve(int l, int r, int t)//区间流动
     if (t < 0) t = r - l + 1 + t;
     if (!t) return;
     select_segment(l, r);
-    select(r + 1 - t, son[root][1]);
+    select(r - t, son[root][1]);
     int now = son[son[root][1]][0], right = son[now][1];
     son[now][1] = 0;
-    select(l + 1, son[root][1]);
+    select(l, son[root][1]);
     now = son[son[root][1]][0];
     son[now][0] = right; fa[right] = now;
     splay(now, 0);
